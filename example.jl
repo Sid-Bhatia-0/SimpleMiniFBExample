@@ -14,7 +14,13 @@ function draw_lines!(image, lines, color)
     return nothing
 end
 
-function start(height_image, width_image, background_color, text_color, sliding_window_size)
+function start()
+    height_image = 720
+    width_image = 1280
+    background_color = 0x00c0c0c0
+    text_color = 0x00000000
+    sliding_window_size = 100
+
     image = zeros(UInt32, height_image, width_image)
 
     frame_buffer = permutedims(image)
@@ -95,4 +101,4 @@ function start(height_image, width_image, background_color, text_color, sliding_
     end
 end
 
-start(720, 1280, 0x00c0c0c0, 0x00000000, 100)
+start()
