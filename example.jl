@@ -14,6 +14,9 @@ function draw_lines!(image, lines, color)
     return nothing
 end
 
+is_pressed(window, button::MFB.mfb_key) = !iszero(unsafe_load(MFB.mfb_get_key_buffer(window), button + 1))
+is_pressed(window, button::MFB.mfb_mouse_button) = !iszero(unsafe_load(MFB.mfb_get_mouse_button_buffer(window), button + 1))
+
 function start()
     height_image = 720
     width_image = 1280
@@ -38,9 +41,6 @@ function start()
     delta_t_oldest = zero(I)
     average_delta_t_sliding_window = zero(I)
 
-    mouse_button_buffer = unsafe_wrap(Array, MFB.mfb_get_mouse_button_buffer(window), 8)
-    key_buffer = unsafe_wrap(Array, MFB.mfb_get_key_buffer(window), 512)
-
     i = 0
 
     while MFB.mfb_wait_sync(window)
@@ -59,17 +59,16 @@ function start()
         push!(lines, "mouse_scroll_x: $(mouse_scroll_x)")
         push!(lines, "mouse_scroll_y: $(mouse_scroll_y)")
 
-        push!(lines, "mouse_button_buffer[MFB.MOUSE_LEFT + 1]: $(mouse_button_buffer[MFB.MOUSE_LEFT + 1])")
-        push!(lines, "mouse_button_buffer[MFB.MOUSE_RIGHT + 1]: $(mouse_button_buffer[MFB.MOUSE_RIGHT + 1])")
-        push!(lines, "mouse_button_buffer[MFB.MOUSE_MIDDLE + 1]: $(mouse_button_buffer[MFB.MOUSE_MIDDLE + 1])")
+        push!(lines, "is_pressed(window, MFB.MOUSE_LEFT): $(is_pressed(window, MFB.MOUSE_LEFT))")
+        push!(lines, "is_pressed(window, MFB.MOUSE_RIGHT): $(is_pressed(window, MFB.MOUSE_RIGHT))")
+        push!(lines, "is_pressed(window, MFB.MOUSE_MIDDLE): $(is_pressed(window, MFB.MOUSE_MIDDLE))")
 
-        push!(lines, "key_buffer[MFB.KB_KEY_UP + 1]: $(key_buffer[MFB.KB_KEY_UP + 1])")
-        push!(lines, "key_buffer[MFB.KB_KEY_DOWN + 1]: $(key_buffer[MFB.KB_KEY_DOWN + 1])")
-        push!(lines, "key_buffer[MFB.KB_KEY_LEFT + 1]: $(key_buffer[MFB.KB_KEY_LEFT + 1])")
-        push!(lines, "key_buffer[MFB.KB_KEY_RIGHT + 1]: $(key_buffer[MFB.KB_KEY_RIGHT + 1])")
-        push!(lines, "key_buffer[MFB.KB_KEY_A + 1]: $(key_buffer[MFB.KB_KEY_A + 1])")
-        push!(lines, "key_buffer[MFB.KB_KEY_B + 1]: $(key_buffer[MFB.KB_KEY_B + 1])")
-        push!(lines, "key_buffer[MFB.KB_KEY_C + 1]: $(key_buffer[MFB.KB_KEY_C + 1])")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_A): $(is_pressed(window, MFB.KB_KEY_A))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_B): $(is_pressed(window, MFB.KB_KEY_B))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_C): $(is_pressed(window, MFB.KB_KEY_C))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_0): $(is_pressed(window, MFB.KB_KEY_0))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_1): $(is_pressed(window, MFB.KB_KEY_1))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_2): $(is_pressed(window, MFB.KB_KEY_2))")
 
         SD.draw!(image, SD.Background(), background_color)
         draw_lines!(image, lines, text_color)
