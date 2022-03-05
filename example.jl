@@ -41,9 +41,6 @@ function start()
     delta_t_oldest = zero(I)
     average_delta_t_sliding_window = zero(I)
 
-    mouse_button_buffer = unsafe_wrap(Array, MFB.mfb_get_mouse_button_buffer(window), 8)
-    key_buffer = unsafe_wrap(Array, MFB.mfb_get_key_buffer(window), 512)
-
     i = 0
 
     while MFB.mfb_wait_sync(window)
