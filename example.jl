@@ -30,33 +30,20 @@ function start()
 
     window = MFB.mfb_open("Example", width_image, height_image)
 
-    I = typeof(time())
     lines = String[]
-    queue = DS.Queue{I}()
-    time_stamp_buffer = DS.CircularBuffer{I}(sliding_window_size)
-
-    t1 = zero(I)
-    t2 = zero(I)
-    delta_t = zero(I)
-    average_delta_t = zero(I)
-    delta_t_oldest = zero(I)
-    average_delta_t_sliding_window = zero(I)
+    time_stamp_buffer = DS.CircularBuffer{Float64}(sliding_window_size)
 
     i = 0
 
     push!(time_stamp_buffer, time())
 
     while MFB.mfb_wait_sync(window)
-        t1 = time()
-
         mouse_x = MFB.mfb_get_mouse_x(window)
         mouse_y = MFB.mfb_get_mouse_y(window)
         mouse_scroll_x = MFB.mfb_get_mouse_scroll_x(window)
         mouse_scroll_y = MFB.mfb_get_mouse_scroll_y(window)
         empty!(lines)
         push!(lines, "previous frame number: $(i)")
-        push!(lines, "time (ms) spent on previous frame (except monitor sync): $(round(delta_t * 1000, digits = 4))")
-        push!(lines, "avg. time (ms) spent per frame (last $(length(time_stamp_buffer)) frames) (except monitor sync): $(round(average_delta_t_sliding_window * 1000, digits = 4))")
         push!(lines, "avg. time (ms) spent per frame (last $(length(time_stamp_buffer)) frames): $(round((last(time_stamp_buffer) - first(time_stamp_buffer)) * 1000 / length(time_stamp_buffer), digits = 4))")
         push!(lines, "mouse_x: $(mouse_x)")
         push!(lines, "mouse_y: $(mouse_y)")
@@ -85,24 +72,9 @@ function start()
             break;
         end
 
-        t2 = time()
-
-        delta_t = t2 - t1
+        i = i + 1
 
         push!(time_stamp_buffer, time())
-
-        average_delta_t = average_delta_t + (delta_t - average_delta_t) / (i + 1)
-
-        if i < sliding_window_size
-            DS.enqueue!(queue, delta_t)
-            average_delta_t_sliding_window = average_delta_t
-        else
-            delta_t_oldest = DS.dequeue!(queue)
-            average_delta_t_sliding_window = average_delta_t_sliding_window + (delta_t - delta_t_oldest) / sliding_window_size
-            DS.enqueue!(queue, delta_t)
-        end
-
-        i = i + 1
     end
 end
 
