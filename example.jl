@@ -33,6 +33,7 @@ function start()
     I = typeof(time())
     lines = String[]
     queue = DS.Queue{I}()
+    time_stamp_buffer = DS.CircularBuffer{I}(sliding_window_size)
 
     t1 = zero(I)
     t2 = zero(I)
@@ -42,6 +43,8 @@ function start()
     average_delta_t_sliding_window = zero(I)
 
     i = 0
+
+    push!(time_stamp_buffer, time())
 
     while MFB.mfb_wait_sync(window)
         t1 = time()
@@ -54,6 +57,7 @@ function start()
         push!(lines, "previous frame number: $(i)")
         push!(lines, "time to draw previous frame (ms): $(delta_t * 1000)")
         push!(lines, "average time to draw previous $(sliding_window_size) frames (ms): $(average_delta_t_sliding_window * 1000)")
+        push!(lines, "average time per frame (ms) (average of previous $(length(time_stamp_buffer)) frames): $((last(time_stamp_buffer) - first(time_stamp_buffer)) * 1000 / length(time_stamp_buffer))")
         push!(lines, "mouse_x: $(mouse_x)")
         push!(lines, "mouse_y: $(mouse_y)")
         push!(lines, "mouse_scroll_x: $(mouse_scroll_x)")
@@ -84,6 +88,8 @@ function start()
         t2 = time()
 
         delta_t = t2 - t1
+
+        push!(time_stamp_buffer, time())
 
         average_delta_t = average_delta_t + (delta_t - average_delta_t) / (i + 1)
 
