@@ -31,11 +31,11 @@ function start()
     window = MFB.mfb_open("Example", width_image, height_image)
 
     lines = String[]
-    time_stamp_buffer = DS.CircularBuffer{Float64}(sliding_window_size)
+    time_stamp_buffer = DS.CircularBuffer{typeof(time_ns())}(sliding_window_size)
 
     i = 0
 
-    push!(time_stamp_buffer, time())
+    push!(time_stamp_buffer, time_ns())
 
     while MFB.mfb_wait_sync(window)
         mouse_x = MFB.mfb_get_mouse_x(window)
@@ -44,7 +44,7 @@ function start()
         mouse_scroll_y = MFB.mfb_get_mouse_scroll_y(window)
         empty!(lines)
         push!(lines, "previous frame number: $(i)")
-        push!(lines, "average time spent per frame (averaged over previous $(length(time_stamp_buffer)) frames): $(round((last(time_stamp_buffer) - first(time_stamp_buffer)) * 1000 / length(time_stamp_buffer), digits = 2)) ms")
+        push!(lines, "average time spent per frame (averaged over previous $(length(time_stamp_buffer)) frames): $(round((last(time_stamp_buffer) - first(time_stamp_buffer)) / (1e6 * length(time_stamp_buffer)), digits = 2)) ms")
         push!(lines, "mouse_x: $(mouse_x)")
         push!(lines, "mouse_y: $(mouse_y)")
         push!(lines, "mouse_scroll_x: $(mouse_scroll_x)")
@@ -74,7 +74,7 @@ function start()
 
         i = i + 1
 
-        push!(time_stamp_buffer, time())
+        push!(time_stamp_buffer, time_ns())
     end
 end
 
