@@ -22,7 +22,7 @@ function start()
     width_image = 1280
     background_color = 0x00c0c0c0
     text_color = 0x00000000
-    sliding_window_size = 100
+    sliding_window_size = 60
 
     image = zeros(UInt32, height_image, width_image)
 
@@ -30,30 +30,21 @@ function start()
 
     window = MFB.mfb_open("Example", width_image, height_image)
 
-    I = typeof(time())
     lines = String[]
-    queue = DS.Queue{I}()
-
-    t1 = zero(I)
-    t2 = zero(I)
-    delta_t = zero(I)
-    average_delta_t = zero(I)
-    delta_t_oldest = zero(I)
-    average_delta_t_sliding_window = zero(I)
+    time_stamp_buffer = DS.CircularBuffer{typeof(time_ns())}(sliding_window_size)
 
     i = 0
 
-    while MFB.mfb_wait_sync(window)
-        t1 = time()
+    push!(time_stamp_buffer, time_ns())
 
+    while MFB.mfb_wait_sync(window)
         mouse_x = MFB.mfb_get_mouse_x(window)
         mouse_y = MFB.mfb_get_mouse_y(window)
         mouse_scroll_x = MFB.mfb_get_mouse_scroll_x(window)
         mouse_scroll_y = MFB.mfb_get_mouse_scroll_y(window)
         empty!(lines)
         push!(lines, "previous frame number: $(i)")
-        push!(lines, "time to draw previous frame (ms): $(delta_t * 1000)")
-        push!(lines, "average time to draw previous $(sliding_window_size) frames (ms): $(average_delta_t_sliding_window * 1000)")
+        push!(lines, "average time spent per frame (averaged over previous $(length(time_stamp_buffer)) frames): $(round((last(time_stamp_buffer) - first(time_stamp_buffer)) / (1e6 * length(time_stamp_buffer)), digits = 2)) ms")
         push!(lines, "mouse_x: $(mouse_x)")
         push!(lines, "mouse_y: $(mouse_y)")
         push!(lines, "mouse_scroll_x: $(mouse_scroll_x)")
@@ -81,22 +72,9 @@ function start()
             break;
         end
 
-        t2 = time()
-
-        delta_t = t2 - t1
-
-        average_delta_t = average_delta_t + (delta_t - average_delta_t) / (i + 1)
-
-        if i < sliding_window_size
-            DS.enqueue!(queue, delta_t)
-            average_delta_t_sliding_window = average_delta_t
-        else
-            delta_t_oldest = DS.dequeue!(queue)
-            average_delta_t_sliding_window = average_delta_t_sliding_window + (delta_t - delta_t_oldest) / sliding_window_size
-            DS.enqueue!(queue, delta_t)
-        end
-
         i = i + 1
+
+        push!(time_stamp_buffer, time_ns())
     end
 end
 
