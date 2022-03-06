@@ -22,7 +22,7 @@ function start()
     width_image = 1280
     background_color = 0x00c0c0c0
     text_color = 0x00000000
-    sliding_window_size = 100
+    sliding_window_size = 60
 
     image = zeros(UInt32, height_image, width_image)
 
