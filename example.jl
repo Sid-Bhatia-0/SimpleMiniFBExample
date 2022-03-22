@@ -37,7 +37,7 @@ function start()
 
     push!(time_stamp_buffer, time_ns())
 
-    while MFB.mfb_wait_sync(window)
+    while true
         mouse_x = MFB.mfb_get_mouse_x(window)
         mouse_y = MFB.mfb_get_mouse_y(window)
         mouse_scroll_x = MFB.mfb_get_mouse_scroll_x(window)
@@ -54,12 +54,10 @@ function start()
         push!(lines, "is_pressed(window, MFB.MOUSE_RIGHT): $(is_pressed(window, MFB.MOUSE_RIGHT))")
         push!(lines, "is_pressed(window, MFB.MOUSE_MIDDLE): $(is_pressed(window, MFB.MOUSE_MIDDLE))")
 
-        push!(lines, "is_pressed(window, MFB.KB_KEY_A): $(is_pressed(window, MFB.KB_KEY_A))")
-        push!(lines, "is_pressed(window, MFB.KB_KEY_B): $(is_pressed(window, MFB.KB_KEY_B))")
-        push!(lines, "is_pressed(window, MFB.KB_KEY_C): $(is_pressed(window, MFB.KB_KEY_C))")
-        push!(lines, "is_pressed(window, MFB.KB_KEY_0): $(is_pressed(window, MFB.KB_KEY_0))")
-        push!(lines, "is_pressed(window, MFB.KB_KEY_1): $(is_pressed(window, MFB.KB_KEY_1))")
-        push!(lines, "is_pressed(window, MFB.KB_KEY_2): $(is_pressed(window, MFB.KB_KEY_2))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_UP): $(is_pressed(window, MFB.KB_KEY_UP))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_DOWN): $(is_pressed(window, MFB.KB_KEY_DOWN))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_LEFT): $(is_pressed(window, MFB.KB_KEY_LEFT))")
+        push!(lines, "is_pressed(window, MFB.KB_KEY_RIGHT): $(is_pressed(window, MFB.KB_KEY_RIGHT))")
 
         SD.draw!(image, SD.Background(), background_color)
         draw_lines!(image, lines, text_color)
