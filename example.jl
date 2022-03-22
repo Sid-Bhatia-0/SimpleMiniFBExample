@@ -37,7 +37,7 @@ function start()
 
     push!(time_stamp_buffer, time_ns())
 
-    while MFB.mfb_wait_sync(window)
+    while true
         mouse_x = MFB.mfb_get_mouse_x(window)
         mouse_y = MFB.mfb_get_mouse_y(window)
         mouse_scroll_x = MFB.mfb_get_mouse_scroll_x(window)
