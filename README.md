@@ -1,9 +1,9 @@
-# SimpleIMGUIExample
+# SimpleMiniFBExample
 
 To run the example, clone the repository and execute the following command inside the cloned directory:
 
 ```
-SimpleIMGUIExample $ julia --project=. -e 'import Pkg; Pkg.instantiate(); include("example.jl")'
+SimpleMiniFBExample $ julia --project=. -e 'import Pkg; Pkg.instantiate(); include("example.jl")'
 ```
 
 Here is how the output looks like:
